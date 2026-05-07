@@ -1,8 +1,8 @@
 import React from 'react';
 import { FlatList, Pressable, Text, TextStyle, View } from 'react-native';
 
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
+import { Button } from '@/components/button/Button';
+import { Card } from '@/components/carts/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { Screen } from '@/components/Screen';
 import { Colors, Spacing, Typography } from '@/constants/theme';
@@ -10,6 +10,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { clearCart, decrement, increment, removeFromCart } from '@/redux/slices/cartSlice';
 import { useRouter } from 'expo-router';
+import { t } from '@/i18n/t';
 
 const formatVnd = (n: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n);
@@ -27,9 +28,9 @@ export const CartScreen = () => {
     return (
       <Screen>
         <EmptyState
-          title="Your cart is empty"
-          description="Add a product to see it here."
-          actionTitle="Reload products"
+          title={t('yourCartIsEmpty')}
+          description={t('addProductToSeeItHere')}
+          actionTitle={t('reload')}
           onActionPress={() => {}}
         />
       </Screen>
@@ -40,9 +41,11 @@ export const CartScreen = () => {
     <Screen>
       <View style={{ flex: 1, gap: Spacing.md }}>
         <View style={{ gap: Spacing.xs }}>
-          <Text style={{ color: palette.text, fontSize: 34, ...Typography.display } as TextStyle}>Cart</Text>
+          <Text style={{ color: palette.text, fontSize: 34, ...Typography.display } as TextStyle}>
+            {t('cart')}
+          </Text>
           <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>
-            Review items before checkout.
+            {t('reviewItemsBeforeCheckout')}
           </Text>
         </View>
 
@@ -71,7 +74,8 @@ export const CartScreen = () => {
                         borderWidth: 1,
                         borderColor: palette.border,
                         backgroundColor: palette.muted,
-                      }}>
+                      }}
+                    >
                       <Text style={{ color: palette.text, fontSize: 18 } as TextStyle}>-</Text>
                     </Pressable>
                     <Pressable
@@ -86,14 +90,18 @@ export const CartScreen = () => {
                         borderWidth: 1,
                         borderColor: palette.border,
                         backgroundColor: palette.muted,
-                      }}>
+                      }}
+                    >
                       <Text style={{ color: palette.text, fontSize: 18 } as TextStyle}>+</Text>
                     </Pressable>
                     <Pressable
                       accessibilityRole="button"
                       onPress={() => dispatch(removeFromCart({ productId: item.product.id }))}
-                      style={{ paddingHorizontal: 6, paddingVertical: 6 }}>
-                      <Text style={{ color: palette.danger, ...Typography.bodyBold } as TextStyle}>Remove</Text>
+                      style={{ paddingHorizontal: 6, paddingVertical: 6 }}
+                    >
+                      <Text style={{ color: palette.danger, ...Typography.bodyBold } as TextStyle}>
+                        {t('remove')}
+                      </Text>
                     </Pressable>
                   </View>
                 }
@@ -108,14 +116,17 @@ export const CartScreen = () => {
             borderTopColor: palette.border,
             paddingTop: Spacing.md,
             gap: Spacing.sm,
-          }}>
+          }}
+        >
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>Total</Text>
-            <Text style={{ color: palette.text, ...Typography.bodyBold } as TextStyle}>{formatVnd(total)}</Text>
+            <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>{t('total')}</Text>
+            <Text style={{ color: palette.text, ...Typography.bodyBold } as TextStyle}>
+              {formatVnd(total)}
+            </Text>
           </View>
-          <Button title="Clear cart" variant="secondary" onPress={() => dispatch(clearCart())} />
+          <Button title={t('clearCart')} variant="secondary" onPress={() => dispatch(clearCart())} />
           <Button
-            title="Checkout"
+            title={t('checkoutBtn')}
             onPress={() => {
               router.push('/checkout');
             }}
@@ -125,4 +136,3 @@ export const CartScreen = () => {
     </Screen>
   );
 };
-

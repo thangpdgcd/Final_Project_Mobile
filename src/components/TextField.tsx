@@ -27,7 +27,8 @@ export const TextField = ({ label, errorText, containerStyle, inputStyle, ...pro
               fontSize: 11,
               ...Typography.bodySemi,
             } as TextStyle
-          }>
+          }
+        >
           {label}
         </Text>
       ) : null}
@@ -52,4 +53,3 @@ export const TextField = ({ label, errorText, containerStyle, inputStyle, ...pro
     </View>
   );
 };
-

@@ -2,16 +2,18 @@ import React from 'react';
 import { FlatList, Pressable, Text, TextStyle, View } from 'react-native';
 
 import { Screen } from '@/components/Screen';
-import { Card } from '@/components/Card';
+import { Card } from '@/components/carts/Card';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchProducts } from '@/redux/slices/productsSlice';
 import { addToCart } from '@/redux/slices/cartSlice';
+import { t } from '@/i18n/t';
 
 export const HomeScreen = () => {
   const scheme = useColorScheme() ?? 'light';
   const palette = Colors[scheme];
+  const whiteText = scheme === 'dark' ? 'rgba(255,255,255,0.92)' : '#ffffff';
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
   const { items: products, status } = useAppSelector((s) => s.products);
@@ -33,7 +35,9 @@ export const HomeScreen = () => {
         </View>
 
         <View style={{ gap: Spacing.sm, flex: 1 }}>
-          <Text style={{ color: palette.text, ...Typography.bodyBold } as TextStyle}>Featured products</Text>
+          <Text style={{ color: palette.text, ...Typography.bodyBold } as TextStyle}>
+            {t('featuredProducts')}
+          </Text>
           <FlatList
             data={products.slice(0, 8)}
             keyExtractor={(p) => p.id}
@@ -52,8 +56,9 @@ export const HomeScreen = () => {
                       paddingVertical: 10,
                       borderRadius: 12,
                       backgroundColor: palette.tint,
-                    }}>
-                    <Text style={{ color: '#fff', ...Typography.bodyBold } as TextStyle}>Add</Text>
+                    }}
+                  >
+                    <Text style={{ color: whiteText, ...Typography.bodyBold } as TextStyle}>Add</Text>
                   </Pressable>
                 }
               />
@@ -64,4 +69,3 @@ export const HomeScreen = () => {
     </Screen>
   );
 };
-

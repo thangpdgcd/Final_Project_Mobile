@@ -33,22 +33,23 @@ export const hydrateAuth = createAsyncThunk('auth/hydrate', async () => {
   return { token, user };
 });
 
-export const login = createAsyncThunk<AuthResponse, { email: string; password: string }, { rejectValue: ApiError }>(
-  'auth/login',
-  async (payload, thunkApi) => {
-    try {
-      const data = await loginApi(payload);
-      await Promise.all([setStoredAuthToken(data.token), setStoredAuthUser(JSON.stringify(data.user))]);
-      return data;
-    } catch (err) {
-      return thunkApi.rejectWithValue(normalizeApiError(err));
-    }
+export const login = createAsyncThunk<
+  AuthResponse,
+  { email: string; password: string },
+  { rejectValue: ApiError }
+>('auth/login', async (payload, thunkApi) => {
+  try {
+    const data = await loginApi(payload);
+    await Promise.all([setStoredAuthToken(data.token), setStoredAuthUser(JSON.stringify(data.user))]);
+    return data;
+  } catch (err) {
+    return thunkApi.rejectWithValue(normalizeApiError(err));
   }
-);
+});
 
 export const register = createAsyncThunk<
   AuthResponse,
-  { name: string; email: string; password: string },
+  { name: string; email: string; phoneNumber?: string; password: string },
   { rejectValue: ApiError }
 >('auth/register', async (payload, thunkApi) => {
   try {
@@ -71,18 +72,21 @@ export const logout = createAsyncThunk<{ ok: boolean }, void, { rejectValue: Api
       await clearStoredAuth();
       return thunkApi.rejectWithValue(normalizeApiError(err));
     }
-  }
+  },
 );
 
-export const refreshMe = createAsyncThunk<User, void, { rejectValue: ApiError }>('auth/me', async (_, thunkApi) => {
-  try {
-    const user = await getMeApi();
-    await setStoredAuthUser(JSON.stringify(user));
-    return user;
-  } catch (err) {
-    return thunkApi.rejectWithValue(normalizeApiError(err));
-  }
-});
+export const refreshMe = createAsyncThunk<User, void, { rejectValue: ApiError }>(
+  'auth/me',
+  async (_, thunkApi) => {
+    try {
+      const user = await getMeApi();
+      await setStoredAuthUser(JSON.stringify(user));
+      return user;
+    } catch (err) {
+      return thunkApi.rejectWithValue(normalizeApiError(err));
+    }
+  },
+);
 
 const slice = createSlice({
   name: 'auth',
@@ -90,6 +94,13 @@ const slice = createSlice({
   reducers: {
     clearAuthError: (state) => {
       state.error = null;
+    },
+    forceLogout: (state) => {
+      state.token = null;
+      state.user = null;
+      state.status = 'idle';
+      state.error = null;
+      state.isHydrated = true;
     },
   },
   extraReducers: (builder) => {
@@ -147,6 +158,5 @@ const slice = createSlice({
   },
 });
 
-export const { clearAuthError } = slice.actions;
+export const { clearAuthError, forceLogout } = slice.actions;
 export const authReducer = slice.reducer;
-

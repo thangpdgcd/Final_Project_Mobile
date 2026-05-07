@@ -3,7 +3,7 @@ import React from 'react';
 import { Text, TextStyle, View } from 'react-native';
 import { Image } from 'expo-image';
 
-import { Button } from '@/components/Button';
+import { Button } from '@/components/button/Button';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { Colors, Spacing, Typography } from '@/constants/theme';
@@ -11,6 +11,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { addToCart } from '@/redux/slices/cartSlice';
 import { fetchProductById } from '@/redux/slices/productsSlice';
+import { t } from '@/i18n/t';
 
 export const ProductDetailScreen = () => {
   const scheme = useColorScheme() ?? 'light';
@@ -22,8 +23,7 @@ export const ProductDetailScreen = () => {
   const { items, status, error } = useAppSelector((s) => s.products);
   const product = items.find((p) => p.id === id);
 
-  const priceText =
-    product?.price != null ? `${product.price.toLocaleString('vi-VN')}₫` : undefined;
+  const priceText = product?.price != null ? `${product.price.toLocaleString('vi-VN')}₫` : undefined;
 
   React.useEffect(() => {
     if (id && !product) {
@@ -46,28 +46,35 @@ export const ProductDetailScreen = () => {
             borderWidth: 1,
             borderColor: palette.border,
             backgroundColor: palette.muted,
-          }}>
+          }}
+        >
           {product?.imageUrl ? (
-            <Image source={{ uri: product.imageUrl }} style={{ width: '100%', height: '100%' }} contentFit="cover" />
+            <Image
+              source={{ uri: product.imageUrl }}
+              style={{ width: '100%', height: '100%' }}
+              contentFit="cover"
+            />
           ) : (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ color: palette.icon, ...Typography.bodyBold } as TextStyle}>No image</Text>
+              <Text style={{ color: palette.icon, ...Typography.bodyBold } as TextStyle}>{t('noImage')}</Text>
             </View>
           )}
         </View>
 
         <View style={{ gap: 6 }}>
           <Text style={{ color: palette.text, fontSize: 34, ...Typography.display } as TextStyle}>
-            {product?.name ?? 'Detail'}
+            {product?.name ?? t('detail')}
           </Text>
           {product?.category ? (
             <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>{product.category}</Text>
           ) : null}
           {priceText ? (
-            <Text style={{ color: palette.text, fontSize: 18, ...Typography.bodyBold } as TextStyle}>{priceText}</Text>
+            <Text style={{ color: palette.text, fontSize: 18, ...Typography.bodyBold } as TextStyle}>
+              {priceText}
+            </Text>
           ) : null}
           <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>
-            {product?.description ?? 'Loading product details…'}
+            {product?.description ?? t('loadingProductDetails')}
           </Text>
         </View>
 
@@ -75,7 +82,7 @@ export const ProductDetailScreen = () => {
 
         <View style={{ gap: Spacing.sm }}>
           <Button
-            title="Add to cart"
+            title={t('addToCart')}
             onPress={() => {
               if (!product) return;
               dispatch(addToCart({ product }));
@@ -83,10 +90,9 @@ export const ProductDetailScreen = () => {
             }}
             disabled={!product || status === 'loading'}
           />
-          <Button title="Back" variant="secondary" onPress={() => router.back()} />
+          <Button title={t('back')} variant="secondary" onPress={() => router.back()} />
         </View>
       </View>
     </Screen>
   );
 };
-

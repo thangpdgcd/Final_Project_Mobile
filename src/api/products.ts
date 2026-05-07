@@ -75,4 +75,3 @@ export const fetchProductByIdApi = async (id: string) => {
   const body = res.data as BackendProduct | Product | null;
   return toProduct(body ?? {});
 };
-

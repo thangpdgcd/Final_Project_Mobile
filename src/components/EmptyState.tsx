@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 
+import { Button } from '@/components/button/Button';
 import { Colors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Button } from '@/components/Button';
 
 type Props = {
   title: string;
@@ -28,10 +28,9 @@ export const EmptyState = ({ title, description, actionTitle, onActionPress, sty
           gap: Spacing.sm,
         },
         style,
-      ]}>
-      <Text style={{ color: palette.text, fontWeight: '800', fontSize: 18 } as TextStyle}>
-        {title}
-      </Text>
+      ]}
+    >
+      <Text style={{ color: palette.text, fontWeight: '800', fontSize: 18 } as TextStyle}>{title}</Text>
       {description ? (
         <Text style={{ color: palette.icon, textAlign: 'center' } as TextStyle}>{description}</Text>
       ) : null}
@@ -43,4 +42,3 @@ export const EmptyState = ({ title, description, actionTitle, onActionPress, sty
     </View>
   );
 };
-

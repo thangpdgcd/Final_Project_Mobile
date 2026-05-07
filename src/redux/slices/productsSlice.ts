@@ -26,7 +26,7 @@ export const fetchProducts = createAsyncThunk<Product[], void, { rejectValue: Ap
     } catch (err) {
       return thunkApi.rejectWithValue(normalizeApiError(err));
     }
-  }
+  },
 );
 
 export const fetchProductById = createAsyncThunk<Product, { id: string }, { rejectValue: ApiError }>(
@@ -38,7 +38,7 @@ export const fetchProductById = createAsyncThunk<Product, { id: string }, { reje
     } catch (err) {
       return thunkApi.rejectWithValue(normalizeApiError(err));
     }
-  }
+  },
 );
 
 export const searchProducts = createAsyncThunk<Product[], { query: string }, { rejectValue: ApiError }>(
@@ -50,7 +50,7 @@ export const searchProducts = createAsyncThunk<Product[], { query: string }, { r
     } catch (err) {
       return thunkApi.rejectWithValue(normalizeApiError(err));
     }
-  }
+  },
 );
 
 const slice = createSlice({
@@ -97,4 +97,3 @@ const slice = createSlice({
 
 export const { setQuery } = slice.actions;
 export const productsReducer = slice.reducer;
-

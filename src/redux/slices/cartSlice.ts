@@ -53,4 +53,3 @@ const slice = createSlice({
 
 export const { addToCart, increment, decrement, removeFromCart, clearCart } = slice.actions;
 export const cartReducer = slice.reducer;
-

@@ -21,4 +21,3 @@ export const Screen = ({ children, style, contentStyle }: Props) => {
     </SafeAreaView>
   );
 };
-

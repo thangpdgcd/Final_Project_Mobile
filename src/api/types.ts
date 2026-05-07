@@ -27,7 +27,15 @@ export type Product = {
   category?: string | null;
 };
 
-export type OrderStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
+export type OrderStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'processing'
+  | 'shipped'
+  | 'completed'
+  | 'refund_requested'
+  | 'refunded'
+  | 'cancelled';
 
 export type OrderLineItem = {
   productId: string;
@@ -48,8 +56,8 @@ export type Order = {
 export type AppNotification = {
   id: string;
   title: string;
+  type?: string | null;
   body: string;
   createdAt: string;
   isRead: boolean;
 };
-

@@ -35,7 +35,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
         });
       }, 1600);
     },
-    [opacity]
+    [opacity],
   );
 
   React.useEffect(() => {
@@ -58,7 +58,8 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
                   backgroundColor: palette.surface,
                   borderColor: palette.border,
                 },
-              ]}>
+              ]}
+            >
               <Text style={{ color: palette.text, ...Typography.bodyBold } as TextStyle}>{message}</Text>
             </Animated.View>
           </View>
@@ -89,4 +90,3 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
 });
-

@@ -1,17 +1,17 @@
-import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
-import { STORAGE_KEYS } from "@/constants/storage";
+import { STORAGE_KEYS } from '@/constants/storage';
 
-const isWeb = Platform.OS === "web";
+const isWeb = Platform.OS === 'web';
 
-const toSecureStoreKey = (key: string) => key.replace(/[^a-zA-Z0-9._-]/g, "_");
+const toSecureStoreKey = (key: string) => key.replace(/[^a-zA-Z0-9._-]/g, '_');
 
 const getItem = async (key: string): Promise<string | null> => {
   if (isWeb) {
     try {
       const v = globalThis?.localStorage?.getItem(key);
-      return typeof v === "string" ? v : null;
+      return typeof v === 'string' ? v : null;
     } catch {
       return null;
     }
@@ -83,8 +83,5 @@ export const clearStoredAuthUser = async (): Promise<void> => {
 };
 
 export const clearStoredAuth = async (): Promise<void> => {
-  await Promise.all([
-    removeItem(STORAGE_KEYS.authToken),
-    removeItem(STORAGE_KEYS.authUser),
-  ]);
+  await Promise.all([removeItem(STORAGE_KEYS.authToken), removeItem(STORAGE_KEYS.authUser)]);
 };

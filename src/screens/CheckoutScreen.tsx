@@ -1,9 +1,9 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, Pressable, Text, TextStyle, View } from 'react-native';
+import { FlatList, Text, TextStyle, View } from 'react-native';
 
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
+import { Button } from '@/components/button/Button';
+import { Card } from '@/components/carts/Card';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { Colors, Spacing, Typography } from '@/constants/theme';
@@ -13,6 +13,7 @@ import { createOrder, resetCreateOrderStatus } from '@/redux/slices/ordersSlice'
 import { clearCart } from '@/redux/slices/cartSlice';
 import { useToast } from '@/components/ToastProvider';
 import { fetchNotifications } from '@/redux/slices/notificationsSlice';
+import { t } from '@/i18n/t';
 
 export const CheckoutScreen = () => {
   const scheme = useColorScheme() ?? 'light';
@@ -24,7 +25,8 @@ export const CheckoutScreen = () => {
   const cartItems = useAppSelector((s) => s.cart.items);
 
   const [shippingAddress, setShippingAddress] = React.useState('');
-  const [paymentMethod, setPaymentMethod] = React.useState<'cod' | 'paypal'>('cod');
+  // Mobile chỉ hỗ trợ COD.
+  const paymentMethod = 'cod' as const;
   const [note, setNote] = React.useState('');
 
   React.useEffect(() => {
@@ -35,42 +37,56 @@ export const CheckoutScreen = () => {
       toast.show('Order placed successfully');
       router.replace('/(tabs)/orders');
     }
-  }, [createStatus, dispatch, router]);
+  }, [createStatus, dispatch, router, toast]);
+
+  React.useEffect(() => {
+    if (createStatus === 'failed' && error?.message) {
+      toast.show(error.message);
+    }
+  }, [createStatus, error?.message, toast]);
 
   const onPlace = () => {
     if (cartItems.length === 0) return;
     if (!shippingAddress.trim()) return;
-    dispatch(
-      createOrder({
-        items: cartItems.map((l) => ({
-          productId: l.product.id,
-          quantity: l.quantity,
-          price: l.product.price ?? null,
-        })),
-        paymentMethod,
-        shippingAddress: shippingAddress.trim(),
-        note: note.trim() ? note.trim() : undefined,
-      })
-    );
+    const doOrder = async () => {
+      const items = cartItems.map((l) => ({
+        productId: l.product.id,
+        quantity: l.quantity,
+        price: l.product.price ?? null,
+      }));
+
+      dispatch(
+        createOrder({
+          items,
+          paymentMethod,
+          shippingAddress: shippingAddress.trim(),
+          note: note.trim() ? note.trim() : undefined,
+        }),
+      );
+    };
+
+    void doOrder().catch((e) => {
+      toast.show(e instanceof Error ? e.message : String(e));
+    });
   };
 
   return (
     <Screen>
       <View style={{ flex: 1, gap: Spacing.md }}>
         <View style={{ gap: 6 }}>
-          <Text style={{ color: palette.text, fontSize: 26, fontWeight: '900' } as TextStyle}>Checkout</Text>
+          <Text style={{ color: palette.text, fontSize: 26, fontWeight: '900' } as TextStyle}>
+            {t('checkout')}
+          </Text>
           <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>
-            Choose payment method and enter shipping address.
+            {t('choosePaymentMethodAndEnterShippingAddress')}
           </Text>
         </View>
 
         <View style={{ gap: Spacing.md }}>
           <View style={{ gap: 8 }}>
-            <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>Payment method</Text>
+            <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>{t('paymentMethod')}</Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setPaymentMethod('cod')}
+              <View
                 style={{
                   flex: 1,
                   height: 44,
@@ -78,41 +94,34 @@ export const CheckoutScreen = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderWidth: 1,
-                  borderColor: paymentMethod === 'cod' ? palette.tint : palette.border,
-                  backgroundColor: paymentMethod === 'cod' ? palette.muted : 'transparent',
-                }}>
-                <Text style={{ color: palette.text, ...Typography.bodyBold } as TextStyle}>Cash (COD)</Text>
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setPaymentMethod('paypal')}
-                style={{
-                  flex: 1,
-                  height: 44,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderWidth: 1,
-                  borderColor: paymentMethod === 'paypal' ? palette.tint : palette.border,
-                  backgroundColor: paymentMethod === 'paypal' ? palette.muted : 'transparent',
-                }}>
-                <Text style={{ color: palette.text, ...Typography.bodyBold } as TextStyle}>PayPal</Text>
-              </Pressable>
+                  borderColor: palette.tint,
+                  backgroundColor: palette.muted,
+                }}
+              >
+                <Text style={{ color: palette.text, ...Typography.bodyBold } as TextStyle}>
+                  {t('cashOnDelivery')}
+                </Text>
+              </View>
             </View>
           </View>
 
           <TextField
-            label="Shipping address"
+            label={t('shippingAddress')}
             value={shippingAddress}
             onChangeText={setShippingAddress}
-            placeholder="Enter your address"
+            placeholder={t('enterYourAddress')}
             returnKeyType="done"
           />
 
-          <TextField label="Note (optional)" value={note} onChangeText={setNote} placeholder="Any note for the order" />
+          <TextField
+            label={t('noteOptional')}
+            value={note}
+            onChangeText={setNote}
+            placeholder={t('anyNoteForTheOrder')}
+          />
 
           <View style={{ gap: 8 }}>
-            <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>Items</Text>
+            <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>{t('items')}</Text>
             <FlatList
               data={cartItems}
               keyExtractor={(l) => l.product.id}
@@ -127,20 +136,28 @@ export const CheckoutScreen = () => {
               )}
             />
           </View>
-          {error?.message ? <Text style={{ color: palette.danger } as TextStyle}>{error.message}</Text> : null}
+          {error?.message ? (
+            <Text style={{ color: palette.danger } as TextStyle}>{error.message}</Text>
+          ) : null}
           {!shippingAddress.trim() ? (
-            <Text style={{ color: palette.danger, ...Typography.body } as TextStyle}>Please enter shipping address.</Text>
+            <Text style={{ color: palette.danger, ...Typography.body } as TextStyle}>
+              {t('enterShippingAddress')}
+            </Text>
           ) : null}
         </View>
 
         <View style={{ flex: 1 }} />
 
         <View style={{ gap: Spacing.sm }}>
-          <Button title="Confirm order" onPress={onPlace} loading={createStatus === 'loading'} disabled={!shippingAddress.trim()} />
-          <Button title="Back to cart" variant="secondary" onPress={() => router.back()} />
+          <Button
+            title={t('confirmOrder')}
+            onPress={onPlace}
+            loading={createStatus === 'loading'}
+            disabled={!shippingAddress.trim()}
+          />
+          <Button title={t('backToCart')} variant="secondary" onPress={() => router.back()} />
         </View>
       </View>
     </Screen>
   );
 };
-

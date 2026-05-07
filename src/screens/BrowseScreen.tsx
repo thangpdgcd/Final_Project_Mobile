@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, RefreshControl, Text, TextStyle, View } from 'react-native';
 
-import { Card } from '@/components/Card';
+import { Card } from '@/components/carts/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
@@ -11,6 +11,7 @@ import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchProducts, searchProducts, setQuery } from '@/redux/slices/productsSlice';
+import { t } from '@/i18n/t';
 
 export const BrowseScreen = () => {
   const scheme = useColorScheme() ?? 'light';
@@ -42,33 +43,20 @@ export const BrowseScreen = () => {
     return <ErrorState error={error} onRetry={onRefresh} />;
   }
 
-  if (status !== 'loading' && items.length === 0) {
-    return (
-      <Screen>
-        <EmptyState
-          title="No products yet"
-          description="When products are available, they’ll show up here."
-          actionTitle="Reload"
-          onActionPress={onRefresh}
-        />
-      </Screen>
-    );
-  }
-
   return (
     <Screen>
       <View style={{ gap: Spacing.md, flex: 1 }}>
         <View style={{ gap: Spacing.xs }}>
           <Text style={{ color: palette.text, fontSize: 34, ...Typography.display } as TextStyle}>
-            Search
+            {t('search')}
           </Text>
           <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>
-            Find products by name.
+            {t('findProductsByName')}
           </Text>
         </View>
 
         <TextField
-          label="Search"
+          label={t('search')}
           value={query}
           onChangeText={(t) => dispatch(setQuery(t))}
           autoCapitalize="none"
@@ -78,8 +66,24 @@ export const BrowseScreen = () => {
         <FlatList
           data={items}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ gap: Spacing.sm, paddingBottom: Spacing.xxl }}
+          contentContainerStyle={{
+            gap: Spacing.sm,
+            paddingBottom: Spacing.xxl,
+            flexGrow: items.length === 0 ? 1 : 0,
+          }}
           refreshControl={<RefreshControl refreshing={status === 'loading'} onRefresh={onRefresh} />}
+          ListEmptyComponent={
+            status === 'loading' ? null : (
+              <View style={{ paddingTop: Spacing.lg }}>
+                <EmptyState
+                  title={query.trim() ? 'No results' : 'No products yet'}
+                  description={query.trim() ? t('tryDifferentKeyword') : t('whenProductsAvailableShowUpHere')}
+                  actionTitle={t('reload')}
+                  onActionPress={onRefresh}
+                />
+              </View>
+            )
+          }
           renderItem={({ item }) => (
             <Card
               title={item.name}
@@ -95,4 +99,3 @@ export const BrowseScreen = () => {
     </Screen>
   );
 };
-

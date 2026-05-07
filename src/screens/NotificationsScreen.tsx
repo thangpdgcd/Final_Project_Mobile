@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, RefreshControl, Text, TextStyle, View } from 'react-native';
 
-import { Card } from '@/components/Card';
+import { Card } from '@/components/carts/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
@@ -9,6 +9,27 @@ import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchNotifications } from '@/redux/slices/notificationsSlice';
+import { t } from '@/i18n/t';
+
+const localizedNotificationTitle = (rawType?: string | null, fallbackTitle?: string) => {
+  const type = String(rawType ?? '').toLowerCase();
+  const fallback = String(fallbackTitle ?? '').trim();
+  const fallbackLower = fallback.toLowerCase();
+
+  if (type.includes('order')) return t('order');
+  if (type.includes('chat')) return t('chat');
+  if (type.includes('voucher')) return t('voucher');
+
+  if (fallbackLower.startsWith('order')) return t('order');
+  if (fallbackLower.startsWith('chat')) return t('chat');
+  if (fallbackLower.startsWith('voucher')) return t('voucher');
+  if (fallbackLower.startsWith('notification')) return t('notification');
+
+  // Vietnamese titles coming from backend should stay as-is.
+  if (fallbackLower.startsWith('đơn')) return fallback;
+
+  return fallbackTitle || t('notification');
+};
 
 export const NotificationsScreen = () => {
   const scheme = useColorScheme() ?? 'light';
@@ -32,9 +53,9 @@ export const NotificationsScreen = () => {
     return (
       <Screen>
         <EmptyState
-          title="No notifications"
-          description="You’re all caught up."
-          actionTitle="Reload"
+          title={t('noNotifications')}
+          description={t('allCaughtUp')}
+          actionTitle={t('reload')}
           onActionPress={onRefresh}
         />
       </Screen>
@@ -46,10 +67,10 @@ export const NotificationsScreen = () => {
       <View style={{ gap: Spacing.md, flex: 1 }}>
         <View style={{ gap: Spacing.xs }}>
           <Text style={{ color: palette.text, fontSize: 34, ...Typography.display } as TextStyle}>
-            Notifications
+            {t('notifications')}
           </Text>
           <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>
-            Updates about your orders and account.
+            {t('updatesAboutOrdersAndAccount')}
           </Text>
         </View>
         <FlatList
@@ -58,11 +79,10 @@ export const NotificationsScreen = () => {
           contentContainerStyle={{ gap: Spacing.sm, paddingBottom: Spacing.xxl }}
           refreshControl={<RefreshControl refreshing={status === 'loading'} onRefresh={onRefresh} />}
           renderItem={({ item }) => (
-            <Card title={item.title} subtitle={item.body} />
+            <Card title={localizedNotificationTitle(item.type, item.title)} subtitle={item.body} />
           )}
         />
       </View>
     </Screen>
   );
 };
-

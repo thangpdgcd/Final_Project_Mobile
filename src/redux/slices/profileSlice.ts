@@ -24,7 +24,7 @@ export const fetchProfile = createAsyncThunk<User, void, { rejectValue: ApiError
     } catch (err) {
       return thunkApi.rejectWithValue(normalizeApiError(err));
     }
-  }
+  },
 );
 
 export const updateProfile = createAsyncThunk<
@@ -74,4 +74,3 @@ const slice = createSlice({
 });
 
 export const profileReducer = slice.reducer;
-

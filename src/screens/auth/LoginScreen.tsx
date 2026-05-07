@@ -2,14 +2,14 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { KeyboardAvoidingView, Platform, Text, TextStyle, View } from 'react-native';
 
-import { Button } from '@/components/Button';
+import { Button } from '@/components/button/Button';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { apiGet } from '../../lib/api';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { clearAuthError, login } from '@/redux/slices/authSlice';
+import { t } from '@/i18n/t';
 
 export const LoginScreen = () => {
   const scheme = useColorScheme() ?? 'light';
@@ -20,28 +20,13 @@ export const LoginScreen = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [localError, setLocalError] = React.useState<string | null>(null);
-  const [healthText, setHealthText] = React.useState<string | null>(null);
-  const [healthLoading, setHealthLoading] = React.useState(false);
-
-  const testApi = React.useCallback(async () => {
-    setHealthLoading(true);
-    setHealthText(null);
-    try {
-      const data = await apiGet('/api/health');
-      setHealthText(JSON.stringify(data, null, 2));
-    } catch (e) {
-      setHealthText(e instanceof Error ? e.message : String(e));
-    } finally {
-      setHealthLoading(false);
-    }
-  }, []);
 
   const onSubmit = () => {
     setLocalError(null);
     dispatch(clearAuthError());
 
     if (!email.trim() || !password) {
-      setLocalError('Please enter email and password.');
+      setLocalError(t('pleaseEnterEmailAndPassword'));
       return;
     }
 
@@ -54,16 +39,16 @@ export const LoginScreen = () => {
         <View style={{ gap: Spacing.lg }}>
           <View style={{ gap: Spacing.xs }}>
             <Text style={{ color: palette.text, fontSize: 38, ...Typography.display } as TextStyle}>
-              Welcome
+              {t('welcome')}
             </Text>
             <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>
-              Sign in to continue.
+              {t('signInToContinue')}
             </Text>
           </View>
 
           <View style={{ gap: Spacing.md }}>
             <TextField
-              label="Email"
+              label={t('email')}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -71,7 +56,7 @@ export const LoginScreen = () => {
               returnKeyType="next"
             />
             <TextField
-              label="Password"
+              label={t('password')}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -83,17 +68,15 @@ export const LoginScreen = () => {
             {error?.message ? (
               <Text style={{ color: palette.danger, ...Typography.body } as TextStyle}>{error.message}</Text>
             ) : null}
-            <Button title="Login" onPress={onSubmit} loading={status === 'loading'} />
-            <Button title="Test API (GET /api/health)" onPress={testApi} loading={healthLoading} />
-            {healthText ? (
-              <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>{healthText}</Text>
-            ) : null}
+            <Button title={t('login')} onPress={onSubmit} loading={status === 'loading'} />
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
-            <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>No account?</Text>
+            <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>{t('noAccount')}</Text>
             <Link href="/(auth)/register">
-              <Text style={{ color: palette.tint, ...Typography.bodyBold } as TextStyle}>Register</Text>
+              <Text style={{ color: palette.tint, ...Typography.bodyBold } as TextStyle}>
+                {t('register')}
+              </Text>
             </Link>
           </View>
         </View>
@@ -101,4 +84,3 @@ export const LoginScreen = () => {
     </Screen>
   );
 };
-

@@ -38,6 +38,8 @@ const requestJson = async (method, path, body) => {
 
   if (!res.ok) {
     const raw = await res.text().catch(() => '');
+    const compact = raw && raw.length > 1000 ? `${raw.slice(0, 1000)}…` : raw;
+    if (compact) console.log('[api] error body', compact);
     const msg = raw ? `HTTP ${res.status}: ${raw}` : `HTTP ${res.status}`;
     throw new Error(msg);
   }
@@ -47,4 +49,3 @@ const requestJson = async (method, path, body) => {
 
 export const apiGet = async (path) => requestJson('GET', path);
 export const apiPost = async (path, body) => requestJson('POST', path, body);
-

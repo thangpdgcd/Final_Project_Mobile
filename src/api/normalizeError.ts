@@ -1,6 +1,7 @@
 import type { AxiosError } from 'axios';
 
 import type { ApiError } from '@/api/types';
+import { t } from '@/i18n/t';
 
 const isAxiosError = (err: unknown): err is AxiosError =>
   typeof err === 'object' && err !== null && 'isAxiosError' in err;
@@ -21,13 +22,12 @@ export const normalizeApiError = (err: unknown): ApiError => {
       return { message: err.message, status, details: data };
     }
 
-    return { message: 'Request failed', status, details: data };
+    return { message: t('requestFailed'), status, details: data };
   }
 
   if (err instanceof Error) {
     return { message: err.message };
   }
 
-  return { message: 'Something went wrong' };
+  return { message: t('somethingWentWrong') };
 };
-

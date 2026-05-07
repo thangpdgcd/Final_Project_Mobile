@@ -2,13 +2,14 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { KeyboardAvoidingView, Platform, Text, TextStyle, View } from 'react-native';
 
-import { Button } from '@/components/Button';
+import { Button } from '@/components/button/Button';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { clearAuthError, register } from '@/redux/slices/authSlice';
+import { t } from '@/i18n/t';
 
 export const RegisterScreen = () => {
   const scheme = useColorScheme() ?? 'light';
@@ -18,6 +19,7 @@ export const RegisterScreen = () => {
 
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
+  const [phoneNumber, setPhoneNumber] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [localError, setLocalError] = React.useState<string | null>(null);
 
@@ -26,11 +28,18 @@ export const RegisterScreen = () => {
     dispatch(clearAuthError());
 
     if (!name.trim() || !email.trim() || !password) {
-      setLocalError('Please fill in all fields.');
+      setLocalError(t('pleaseFillAllFields'));
       return;
     }
 
-    dispatch(register({ name: name.trim(), email: email.trim(), password }));
+    dispatch(
+      register({
+        name: name.trim(),
+        email: email.trim(),
+        phoneNumber: phoneNumber.trim() ? phoneNumber.trim() : undefined,
+        password,
+      }),
+    );
   };
 
   return (
@@ -39,17 +48,17 @@ export const RegisterScreen = () => {
         <View style={{ gap: Spacing.lg }}>
           <View style={{ gap: Spacing.xs }}>
             <Text style={{ color: palette.text, fontSize: 38, ...Typography.display } as TextStyle}>
-              Join us
+              {t('joinUs')}
             </Text>
             <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>
-              Create your account.
+              {t('createYourAccount')}
             </Text>
           </View>
 
           <View style={{ gap: Spacing.md }}>
-            <TextField label="Name" value={name} onChangeText={setName} returnKeyType="next" />
+            <TextField label={t('name')} value={name} onChangeText={setName} returnKeyType="next" />
             <TextField
-              label="Email"
+              label={t('email')}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -57,7 +66,14 @@ export const RegisterScreen = () => {
               returnKeyType="next"
             />
             <TextField
-              label="Password"
+              label={t('phoneNumber')}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              keyboardType="phone-pad"
+              returnKeyType="next"
+            />
+            <TextField
+              label={t('password')}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -69,15 +85,15 @@ export const RegisterScreen = () => {
             {error?.message ? (
               <Text style={{ color: palette.danger, ...Typography.body } as TextStyle}>{error.message}</Text>
             ) : null}
-            <Button title="Register" onPress={onSubmit} loading={status === 'loading'} />
+            <Button title={t('register')} onPress={onSubmit} loading={status === 'loading'} />
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
             <Text style={{ color: palette.icon, ...Typography.body } as TextStyle}>
-              Already have an account?
+              {t('alreadyHaveAnAccount')}
             </Text>
             <Link href="/(auth)/login">
-              <Text style={{ color: palette.tint, ...Typography.bodyBold } as TextStyle}>Login</Text>
+              <Text style={{ color: palette.tint, ...Typography.bodyBold } as TextStyle}>{t('login')}</Text>
             </Link>
           </View>
         </View>
@@ -85,4 +101,3 @@ export const RegisterScreen = () => {
     </Screen>
   );
 };
-

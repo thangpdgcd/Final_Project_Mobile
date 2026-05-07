@@ -54,7 +54,8 @@ export const Card = ({ title, subtitle, imageUrl, right, onPress, style }: Props
         },
         shadow,
         style,
-      ]}>
+      ]}
+    >
       <View
         style={{
           width: 54,
@@ -64,7 +65,8 @@ export const Card = ({ title, subtitle, imageUrl, right, onPress, style }: Props
           borderWidth: 1,
           borderColor: palette.border,
           backgroundColor: palette.muted,
-        }}>
+        }}
+      >
         {imageUrl ? (
           <Image source={{ uri: imageUrl }} style={{ width: '100%', height: '100%' }} contentFit="cover" />
         ) : (
@@ -76,9 +78,7 @@ export const Card = ({ title, subtitle, imageUrl, right, onPress, style }: Props
         )}
       </View>
       <View style={{ flex: 1, gap: 2 }}>
-        <Text style={{ color: palette.text, fontWeight: '700', fontSize: 16 } as TextStyle}>
-          {title}
-        </Text>
+        <Text style={{ color: palette.text, fontWeight: '700', fontSize: 16 } as TextStyle}>{title}</Text>
         {subtitle ? (
           <Text style={{ color: palette.icon } as TextStyle} numberOfLines={2}>
             {subtitle}
@@ -89,4 +89,3 @@ export const Card = ({ title, subtitle, imageUrl, right, onPress, style }: Props
     </Container>
   );
 };
-

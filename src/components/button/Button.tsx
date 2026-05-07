@@ -31,8 +31,7 @@ export const Button = ({
 
   const palette = Colors[scheme];
 
-  const bg =
-    variant === 'primary' ? palette.tint : variant === 'danger' ? palette.danger : palette.muted;
+  const bg = variant === 'primary' ? palette.tint : variant === 'danger' ? palette.danger : palette.muted;
   const fg = variant === 'secondary' ? palette.text : '#ffffff';
   const borderColor = variant === 'secondary' ? palette.border : 'transparent';
 
@@ -69,7 +68,8 @@ export const Button = ({
         },
         aStyle,
         style,
-      ]}>
+      ]}
+    >
       {loading ? <ActivityIndicator color={fg} /> : null}
       <Text
         style={[
@@ -81,10 +81,10 @@ export const Button = ({
             ...Typography.bodyBold,
           } as TextStyle,
           textStyle,
-        ]}>
+        ]}
+      >
         {title}
       </Text>
     </AnimatedPressable>
   );
 };
-

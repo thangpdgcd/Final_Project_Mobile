@@ -20,7 +20,8 @@ export const LoadingOverlay = ({ visible }: Props) => {
           backgroundColor: 'rgba(0,0,0,0.25)',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <View
           style={{
             height: 64,
@@ -29,11 +30,11 @@ export const LoadingOverlay = ({ visible }: Props) => {
             backgroundColor: palette.surface,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <ActivityIndicator color={palette.tint} />
         </View>
       </View>
     </Modal>
   );
 };
-

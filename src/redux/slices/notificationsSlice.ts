@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { normalizeApiError } from '@/api/normalizeError';
 import type { ApiError, AppNotification } from '@/api/types';
+import { t } from '@/i18n/t';
 
 type NotificationsState = {
   items: AppNotification[];
@@ -24,7 +25,7 @@ export const fetchNotifications = createAsyncThunk<AppNotification[], void, { re
     } catch (err) {
       return thunkApi.rejectWithValue(normalizeApiError(err));
     }
-  }
+  },
 );
 
 const slice = createSlice({
@@ -43,10 +44,9 @@ const slice = createSlice({
       })
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload ?? { message: 'Failed to load notifications' };
+        state.error = action.payload ?? { message: t('failedToLoadNotifications') };
       });
   },
 });
 
 export const notificationsReducer = slice.reducer;
-
